@@ -1,0 +1,101 @@
+#!/bin/bash
+# Date: 10/07/2018
+# David Brunelle
+
+# Globals
+DATA='Please input files of .CSV format'
+ARGS=$#
+
+# Function definitions
+define_output() {
+    echo $var | sed -r 's/csv/output/g'
+}
+
+is_file() {
+    if [[ -f $var ]] ; then
+	echo 0
+    else
+        echo 1
+    fi
+}
+
+is_csv () {
+    FILEN_EXTEN=$( echo $var | grep -o '....$' )
+    if [[ $FILEN_EXTEN == ".csv" ]] ; then
+	echo 0
+    else
+	echo 2
+    fi
+}
+
+is_directory() {
+    if [[ ! -d $var ]] ; then
+	echo 0
+    else
+	echo 3
+    fi
+}
+
+
+parser () {
+    echo $@ | awk 'BEGIN {FS = ","} ; { print $1 }' 
+    #if less than 2 parameters, exit with error
+}
+
+status_handler() {
+    ARG=$@
+    #$( parser $@ )
+    if [[ ARG -eq 0 ]] ; then
+	return
+	#echo $ARG
+    elif [[ ARG -eq 1 ]]; then
+	echo $var': is not a file or does not exist within the scope of the  present directory'
+    elif [[ ARG -eq 2 ]]; then
+	echo $var' :is not of type .csv based on filename extension'
+    elif [[ ARG -eq 3 ]] ; then
+	echo $var' :is a directory'
+    fi
+}
+
+#Too many inputs
+if [[ $ARGS -gt 9 ]] ; then
+    echo 'Too many inputs'
+fi
+
+#No inputs 
+if [[ $ARGS == 0 ]] ; then 
+    echo $DATA
+fi
+
+for var in "$@" ; do
+
+    FILE_CHECK=$( is_file $var )
+    #echo $FILE_CHECK
+    
+    if [[ FILE_CHECK -eq 0 ]] ; then
+	CSV_CHECK=$( is_csv $var )
+	
+	#echo $CSV_CHECK
+	echo $( status_handler $CSV_CHECK )
+	
+    else
+	DIR_CHECK=$( is_directory $var )
+	if [[ $(( $DIR_CHECK && $FILE_CHECK ))  == 1 ]] ; then
+	    echo $( status_handler $DIR_CHECK )
+	else
+	    echo $( status_handler $FILE_CHECK )
+	fi
+    fi
+    
+    
+    #EVALUATOR=$( status_handler $FILE_CHECK, $DIR_CHECK ) 
+    #echo $EVALUATOR
+
+	#echo $EVALUATOR
+	#echo $( is_file $var )
+	#ITERATOR=$(( ITERATOR+1 ))
+	#FILES[$ITERATOR]=$var
+	#echo $ITERATOR ${FILES[ITERATOR]}
+	#TEMP=$( define_output $var )
+	#echo $TEMP
+done
