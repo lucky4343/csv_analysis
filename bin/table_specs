@@ -7,6 +7,12 @@ DATA='Please input files of .CSV format'
 ARGS=$#
 
 # Function definitions
+read_fields() {
+    ALL_FIELDS=$( awk 'BEGIN {FS="\n"} ; { print $1 }'  $var )
+    echo $ALL_FIELDS
+    
+}
+
 define_output() {
     echo $var | sed -r 's/csv/output/g'
 }
@@ -45,7 +51,10 @@ parser () {
 status_handler() {
     ARG=$@
     if [[ ARG -eq 0 ]] ; then
-	echo $var': is a csv'
+	#OUTPUT=$( define_output $var )
+	#echo cat > $OUTPUT
+	#echo $var': is a csv'
+	echo $( read_fields $var)
     elif [[ ARG -eq 1 ]]; then
 	echo $var': is not a file or does not exist within the scope of the  present directory'
     elif [[ ARG -eq 2 ]]; then
