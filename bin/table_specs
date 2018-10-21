@@ -11,19 +11,15 @@ ARGS=$#
 #NF = number of fields
 
 read_fields() {
-
-    MAX_LEN=""
-    
-    awk -v MAX_LEN="$MAX_LEN" '{
-    {FS=","} ;
-    for(i=1; i<=1; i++)
-    if (NR==i && NR > 1) {
-       if (length($11) > length(MAX_LEN)) 
-       MAX_LEN=$11
-       print MAX_LEN
-    } 
-    }
-    END {print length(MAX_LEN)}' $var
+    NUM_FIELDS=$( awk '{FS=","} END {print NF}' $var)
+    FIELD=1
+    if [[ -d $var"_output" ]] ; then
+	mkdir $var"_output"
+    fi
+    while [[ $FIELD -le $NUM_FIELDS ]] ; do
+	awk -v FIELD="$FIELD" '{ {FS=","} ; {print $FIELD} }' $var > "$var""_""$FIELD"
+	FIELD=$(($FIELD + 1))
+    done	
 }
 
 define_output() {
