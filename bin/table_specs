@@ -7,19 +7,23 @@ DATA='Please input files of .CSV format'
 ARGS=$#
 
 # Function definitions
-#awk 'BEGIN {FS=","} ; { print $1 }'  $var
-#NF = number of fields
-
 read_fields() {
+    if [[  -d "$var""_dir" ]] ; then
+	echo "Please relocate directory $var"\_dir" then try again"
+    
+    else
+	mkdir "$var"\_dir""
+	mv $var "$var"\_dir""
+	cd "$var"\_dir""
     NUM_FIELDS=$( awk '{FS=","} END {print NF}' $var)
     FIELD=1
-    if [[ -d $var"_output" ]] ; then
-	mkdir $var"_output"
-    fi
     while [[ $FIELD -le $NUM_FIELDS ]] ; do
 	awk -v FIELD="$FIELD" '{ {FS=","} ; {print $FIELD} }' $var > "$var""_""$FIELD"
 	FIELD=$(($FIELD + 1))
-    done	
+    done
+    mv $var ../
+    fi
+    
 }
 
 define_output() {
