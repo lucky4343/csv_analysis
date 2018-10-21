@@ -7,10 +7,23 @@ DATA='Please input files of .CSV format'
 ARGS=$#
 
 # Function definitions
+#awk 'BEGIN {FS=","} ; { print $1 }'  $var
+#NF = number of fields
+
 read_fields() {
-    ALL_FIELDS=$( awk 'BEGIN {FS="\n"} ; { print $1 }'  $var )
-    echo $ALL_FIELDS
+
+    MAX_LEN=""
     
+    awk -v MAX_LEN="$MAX_LEN" '{
+    {FS=","} ;
+    for(i=1; i<=1; i++)
+    if (NR==i && NR > 1) {
+       if (length($11) > length(MAX_LEN)) 
+       MAX_LEN=$11
+       print MAX_LEN
+    } 
+    }
+    END {print length(MAX_LEN)}' $var
 }
 
 define_output() {
@@ -54,7 +67,7 @@ status_handler() {
 	#OUTPUT=$( define_output $var )
 	#echo cat > $OUTPUT
 	#echo $var': is a csv'
-	echo $( read_fields $var)
+	echo $( read_fields "$var")
     elif [[ ARG -eq 1 ]]; then
 	echo $var': is not a file or does not exist within the scope of the  present directory'
     elif [[ ARG -eq 2 ]]; then
