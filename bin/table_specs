@@ -7,6 +7,10 @@ DATA='Please input files of .CSV format'
 ARGS=$#
 
 # Function definitions
+standardize() {
+    cat $var | sed -r 's/,/, /g' > "$var""_standardized" 
+}
+
 read_fields() {
     if [[  -d "$var""_dir" ]] ; then
 	echo "Please relocate directory $var"\_dir" then try again"
@@ -15,19 +19,21 @@ read_fields() {
 	mkdir "$var"\_dir""
 	mv $var "$var"\_dir""
 	cd "$var"\_dir""
+	
     NUM_FIELDS=$( awk '{FS=","} END {print NF}' $var)
     FIELD=1
+
+    echo $NUM_FIELDS
+    #stop split on coordinates by regex ["(]
+    
     while [[ $FIELD -le $NUM_FIELDS ]] ; do
-	awk -v FIELD="$FIELD" '{ {FS=","} ; {print $FIELD} }' $var > "$var""_""$FIELD"
+	awk -v FIELD="$FIELD" '{ {FS=","} ; {$0=$0} ; {print $FIELD} }' $var > "$var""_""$FIELD"
 	FIELD=$(($FIELD + 1))
     done
+    
     mv $var ../
     fi
     
-}
-
-define_output() {
-    echo $var | sed -r 's/csv/output/g'
 }
 
 is_file() {
@@ -54,12 +60,7 @@ is_directory() {
 	echo 3
     fi
 }
-
-
-parser () {
-    echo $@ | awk 'BEGIN {FS = ","} ; { print $1 }' 
-    #if less than 2 parameters, exit with error
-}
+    
 
 status_handler() {
     ARG=$@
@@ -67,13 +68,15 @@ status_handler() {
 	#OUTPUT=$( define_output $var )
 	#echo cat > $OUTPUT
 	#echo $var': is a csv'
-	echo $( read_fields "$var")
+
+	#echo $( standardize "$var" )
+	echo $( read_fields "$var" )
     elif [[ ARG -eq 1 ]]; then
 	echo $var': is not a file or does not exist within the scope of the  present directory'
     elif [[ ARG -eq 2 ]]; then
 	echo $var' :is not of type .csv based on filename extension'
     elif [[ ARG -eq 3 ]] ; then
-	echo $var' :is a directory'
+	echo $var' :is a directory'	
     fi
 }
 
@@ -90,12 +93,10 @@ fi
 for var in "$@" ; do
 
     FILE_CHECK=$( is_file $var )
-    #echo $FILE_CHECK
     
     if [[ FILE_CHECK -eq 0 ]] ; then
 	CSV_CHECK=$( is_csv $var )
 	
-	#echo $CSV_CHECK
 	echo $( status_handler $CSV_CHECK )
 	
     else
@@ -106,16 +107,5 @@ for var in "$@" ; do
 	    echo $( status_handler $FILE_CHECK )
 	fi
     fi
-    
-    
-    #EVALUATOR=$( status_handler $FILE_CHECK, $DIR_CHECK ) 
-    #echo $EVALUATOR
 
-	#echo $EVALUATOR
-	#echo $( is_file $var )
-	#ITERATOR=$(( ITERATOR+1 ))
-	#FILES[$ITERATOR]=$var
-	#echo $ITERATOR ${FILES[ITERATOR]}
-	#TEMP=$( define_output $var )
-	#echo $TEMP
 done
