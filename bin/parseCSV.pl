@@ -1,25 +1,36 @@
+#!/bin/sh
 #!/usr/bin/perl
+
 use strict;
 use warnings;
+use Text::CSV;
 
-my $csv_pattern = "[,]"; #"[^\"]*\""; 
+if($ARGV[0] eq "-Fields") {
+    open(my $csv_input, "<", $ARGV[1])
+	or die "Cannot open given input: $!";
+    
+    my $firstln = readline($csv_input);
+    my @fields = split("[,]", $firstln);
+    my $field_num = scalar @fields;
+    print "$field_num \n";
+    
+    close $csv_input or die "Failure to close File gracefully: $!";
+    
+}
 
-open(my $csv_input, "<", "test3.csv")
+else {
+my $csv_sep = Text::CSV -> new({sep_char => ','});
+open(my $csv_input, "<", $ARGV[0])
     or die "Cannot open given input: $!";
 
-my $firstln = readline($csv_input);
-
-my @fields = split("[,]", $firstln);
-my $field_num = scalar @fields;
-my @fields_match = (0..$field_num);
-while (my $line = <$csv_input>){
-    if($line =~ $csv_pattern){
-	print split("[,]", $line);
+    while (my $line = <$csv_input>){
+	if($csv_sep -> parse($line)){
+	    #print split("[,]", $line);
+	    my @fields = $csv_sep -> fields();
+	    print "@fields[1,2] \n";
+	}
     }
-}
-print "@fields";
-
-#print $firstln;
-
 close $csv_input or die "Failure to close File gracefully: $!";
+}
+
 

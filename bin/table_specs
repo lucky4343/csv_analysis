@@ -7,10 +7,6 @@ DATA='Please input files of .CSV format'
 ARGS=$#
 
 # Function definitions
-standardize() {
-    cat $var | sed -r 's/,/, /g' > "$var""_standardized" 
-}
-
 read_fields() {
     if [[  -d "$var""_dir" ]] ; then
 	echo "Please relocate directory $var"\_dir" then try again"
@@ -18,20 +14,14 @@ read_fields() {
     else
 	mkdir "$var"\_dir""
 	mv $var "$var"\_dir""
+	mv parseCSV.pl "$var"\_dir""
 	cd "$var"\_dir""
-	
-    NUM_FIELDS=$( awk '{FS=","} END {print NF}' $var)
-    FIELD=1
 
-    echo $NUM_FIELDS
-    #stop split on coordinates by regex ["(]
+	./parseCSV.pl -Fields $var | cat > "Fields.txt"
     
-    while [[ $FIELD -le $NUM_FIELDS ]] ; do
-	awk -v FIELD="$FIELD" '{ {FS=","} ; {$0=$0} ; {print $FIELD} }' $var > "$var""_""$FIELD"
-	FIELD=$(($FIELD + 1))
-    done
     
-    mv $var ../
+	mv $var ../
+	mv parseCSV.pl ../
     fi
     
 }
