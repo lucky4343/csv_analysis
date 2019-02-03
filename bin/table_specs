@@ -17,7 +17,8 @@ read_fields() {
 	mv parseCSV.pl "$var"\_dir""
 	cd "$var"\_dir""
 
-	./parseCSV.pl -Fields $var | cat > "Fields.txt"
+	./parseCSV.pl -Fields $var 
+	./parseCSV.pl $field_num $var | cat > "$var"\_parsed""
     
     
 	mv $var ../

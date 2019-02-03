@@ -1,4 +1,3 @@
-#!/bin/sh
 #!/usr/bin/perl
 
 use strict;
@@ -19,15 +18,15 @@ if($ARGV[0] eq "-Fields") {
 }
 
 else {
-my $csv_sep = Text::CSV -> new({sep_char => ','});
-open(my $csv_input, "<", $ARGV[0])
-    or die "Cannot open given input: $!";
-
+    my $csv_sep = Text::CSV -> new({sep_char => ','});
+    open(my $csv_input, "<", $ARGV[0])
+	or die "Cannot open given input: $!";
+    
     while (my $line = <$csv_input>){
 	if($csv_sep -> parse($line)){
-	    #print split("[,]", $line);
+	    
 	    my @fields = $csv_sep -> fields();
-	    print "@fields[1,2] \n";
+	    print "@fields[1,2,3] \n";
 	}
     }
 close $csv_input or die "Failure to close File gracefully: $!";
