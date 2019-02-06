@@ -7,7 +7,7 @@ DATA='Please input files of .CSV format'
 ARGS=$#
 
 # Function definitions
-read_fields() {
+parse_fields() {
     if [[  -d "$var""_dir" ]] ; then
 	echo "Please relocate directory $var"\_dir" then try again"
     
@@ -17,8 +17,14 @@ read_fields() {
 	mv parseCSV.pl "$var"\_dir""
 	cd "$var"\_dir""
 
-	./parseCSV.pl -Fields $var 
-	./parseCSV.pl $field_num $var | cat > "$var"\_parsed""
+	FIELDS=$( ./parseCSV.pl -Fields $var )
+	
+	for value in $( seq 1 $FIELDS);
+	do
+	    touch "$var"\_"$value"
+	done
+		     
+	./parseCSV.pl $var | cat > "$var"\_parsed""
     
     
 	mv $var ../
@@ -61,7 +67,7 @@ status_handler() {
 	#echo $var': is a csv'
 
 	#echo $( standardize "$var" )
-	echo $( read_fields "$var" )
+	echo $( parse_fields "$var" )
     elif [[ ARG -eq 1 ]]; then
 	echo $var': is not a file or does not exist within the scope of the  present directory'
     elif [[ ARG -eq 2 ]]; then
