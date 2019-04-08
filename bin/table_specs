@@ -18,14 +18,23 @@ parse_fields() {
 	cd "$var"\_dir""
 
 	FIELDS=$( ./parseCSV.pl -Fields $var )
-	
+	ITER=0 
 	for value in $( seq 1 $FIELDS);
 	do
 	    touch "$var"\_"$value"
+	    ./parseCSV.pl $ITER $var | cat > "$var"\_"$value"
+	    print "$((1 + $ITER)) of $FIELDS output "
+	    ITER=$(( ITER + 1 ))
+	    #divide fields for efficiency?
+	    #delete from larger parse with awk after for efficiency?
+	    #skip output files altogether?
+
+	    #error from test3
+	    #./table_specs: line 109: syntax error near unexpected token `)'
+	    #./table_specs: line 109: `LE_CHECK ))  == 1 ]] ; then'
+
+	    
 	done
-		     
-	./parseCSV.pl $var | cat > "$var"\_parsed""
-    
     
 	mv $var ../
 	mv parseCSV.pl ../
